@@ -1,0 +1,13 @@
+- name: kernel update
+  hosts: localhost
+
+  tasks:
+    - name: upg & upd the system
+      apt:
+        upgrade: yes
+
+    - name: upd kernel
+      apt:
+        name: linux-image-5.10-amd64
+        state: present
+        update_cache: yes
