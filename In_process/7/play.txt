@@ -1,0 +1,33 @@
+[root@centos user]# ansible-playbook custom.yml 
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does
+not match 'all'
+
+PLAY [create custom package] ********************************************************************************
+
+TASK [Gathering Facts] **************************************************************************************
+ok: [localhost]
+
+TASK [install prep packages] ********************************************************************************
+changed: [localhost]
+
+TASK [create dir] *******************************************************************************************
+changed: [localhost]
+
+TASK [download packages] ************************************************************************************
+changed: [localhost] => (item=https://github.com/openssl/openssl/archive/refs/heads/OpenSSL_1_1_1-stable.zip)
+changed: [localhost] => (item=https://github.com/openssl/openssl/archive/refs/heads/OpenSSL_1_1_1-stable.zip)
+
+TASK [download openssl] *************************************************************************************
+changed: [localhost]
+
+TASK [istall rpm] *******************************************************************************************
+[WARNING]: Consider using the yum, dnf or zypper module rather than running 'rpm'.  If you need to use
+command because yum, dnf or zypper is insufficient you can add 'warn: false' to this command task or set
+'command_warnings=False' in ansible.cfg to get rid of this message.
+changed: [localhost]
+
+TASK [unzip openssl] ****************************************************************************************
+changed: [localhost]
+
+TASK [deps] *************************************************************************************************
+changed: [localhost]

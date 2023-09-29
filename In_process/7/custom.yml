@@ -1,0 +1,71 @@
+- name: create custom package
+  hosts: localhost
+  
+  tasks:
+    
+    - name: install prep packages
+      yum:
+        pkg: 
+          - redhat-lsb-core
+          - wget
+          - rpmdevtools
+          - rpm-build
+          - createrepo
+          - yum-utils
+          - gcc
+        state: present
+
+    - name: create dir
+      file:
+        path: /home/user/openssl_latest
+        state: directory
+
+    - name: download packages
+      get_url:
+        url: "{{ item }}""
+        dest: /home/user
+      loop: 
+        - https://nginx.org/packages/centos/8/SRPMS/nginx-1.24.0-1.el8.ngx.src.rpm
+        - https://github.com/openssl/openssl/archive/refs/heads/OpenSSL_1_1_1-stable.zip
+
+    - name: istall rpm
+      command: rpm -i /home/user/nginx-1.*
+
+    - name: unzip openssl
+      unarchive:
+        src: /home/user/OpenSSL_1_1_1-stable.zip
+        dest: /home/user/openssl_latest
+
+    - name: deps
+      command: yum-builddep rpmbuild/SPECS/nginx.spec
+
+    - name: modify spec file
+      lineinfile:
+        dest: /root/rpmbuild/SPECS/nginx.spec
+        backup: yes
+        line: --with-openssl=/root/openssl-1.1.1a
+        insertafter: --with-ld-opt="%{WITH_LD_OPT}" \
+                     
+      
+    - name: build
+      command: rpmbuild -bb /root/rpmbuild/SPECS/nginx.spec
+
+    - name: ensure file1 exists
+      stat:
+        path: /root/rpmbuild/RPMS/x86_64/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+      register: stat_result
+
+    - name: ensure file2 exists
+      stat:
+        path: /root/rpmbuild/RPMS/x86_64/nginx-debuginfo-1.14.1-1.el7_4.ngx.x86_64.rpm
+      register: stat_result
+
+    - name: install nginx
+      yum:
+        name: /root/rpmbuild/RPMS/x86_64/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+        state: present
+
+    - name: start nginx service
+      service:
+        name: nginx
+        state: started
